@@ -98,25 +98,146 @@ If you have, then you probably understand that each source is not only missing k
 Enter DOPE!
 The frustration that came with searching these sites for specific bits of information like what are the street names for Ritalin or what class of drugs does Ritalin belong to? Eventually motivated the development of DOPE. The Drug Ontology Parsing Engine. An R package designed to not only provide a comprehensive database of over 4,000 drugs but also parse free text and identify known drugs.
 
----
-# Data Sources
-
-
-???
-DOPE
+Before I get into a brief demonstration on how DOPE functions are used, the following slides will give you a high-level overview of some of the key functions within DOPE.
 ---
 # `DOPE::parse()`
 
----
-# `DOPE::lookup()`
+.pull-left[
+- Extract identifiable drug names from a corpus of text 
+  - clinical trial  
+  - social media  
+  - transcriptions
+  
 
+|textdrug                               |
+|:--------------------------------------|
+|Bup/Nx                                 |
+|Bup/Nx.                                |
+|bup/nx                                 |
+|Percocets and Vicodin                  |
+|Barbiturate (doesn't know which)       |
+|heroin - "few days on, few days off"   |
+|heroin- "a few days on, few days off   |
+|Ambien = 2 pills                       |
+|Ambien "a bunch" = 2 pills             |
+|promethazine (25mg), clonidine (0.1mg) |
+
+]
+.pull-right[
+
+```r
+library(DOPE)
+library(dplyr)
+library(stringr)
+
+parse(messy_data$textdrug)
+```
+
+```
+##  [1] "bup/nx"       "bup/nx"       "bup/nx"       "percocets"    "vicodin"     
+##  [6] "barbiturate"  "heroin"       "ambien"       "ambien"       "promethazine"
+## [11] "clonidine"   
+## attr(,"na.action")
+## [1] 8 9
+## attr(,"class")
+## [1] "omit"
+```
+
+]
+
+???
+at it's core, parse is a function that takes in a corpus of text and returns known drugs. For example, this messy dataframe includes potentially problematic characters like quotations, slashes and dashes. It also contains some information that we really don't care about, like dosage and units. 
+
+the parse functions takes in the "textdrug" vector, filters out any stopwords and then utilizes a rule-based Natural Language Processing (NLP) model to identify and extract the drugs in a phrase. Stopwords include a combination of 3 domain-independent lexicons from Julia Silge and David Robinson's tidytext package and a set of domain-specific stopwords that we have established. What we have as a result is a vector of 11 drugs!
 ---
 # `DOPE::lookup_*()`
 
+.pull-left[
+
+**Single String**
+
+```r
+lookup("speed", "dope")
+```
+
+```
+##   original_word     class        category synonym
+## 1         speed stimulant     amphetamine   speed
+## 2         speed stimulant           crack   speed
+## 3         speed stimulant methamphetamine   speed
+## 4          dope    heroin          heroin    dope
+## 5          dope  cannabis       marijuana    dope
+```
+
+**Compress our search results**
+
+```r
+lookup("speed", "dope") %&gt;% 
+  compress_lookup()
+```
+
+```
+##   original_word     class        category
+## 1         speed stimulant     amphetamine
+## 2         speed stimulant           crack
+## 3         speed stimulant methamphetamine
+## 4          dope    heroin          heroin
+## 5          dope  cannabis       marijuana
+```
+]
+.pull-right[
+
+**Get all possible synonyms of a drug**
+
+
+```r
+lookup_syn("dope")
+```
+
+```
+## Your search matched multiple categories. Please choose one 
+## from the following list and refine your search. Example: 
+## lookup_syn('heroin') or lookup_syn('marijuana')
+```
+
+```
+##    category
+## 1    heroin
+## 2 marijuana
+```
+
+
+```r
+head(lookup_syn("marijuana"),5)
+```
+
+```
+##      class category_match       synonym
+## 1 cannabis      marijuana           420
+## 2 cannabis      marijuana        a-bomb
+## 3 cannabis      marijuana acapulco gold
+## 4 cannabis      marijuana  acapulco red
+## 5 cannabis      marijuana           ace
+```
+]
+
+
+
+???
+Once you have obtained your vector of possible drugs, then it is time to look them up! DOPE contains 1 main lookup function and 2 helper functions.
+
+lookup() can take either a vector of strings or multiple strings and looks for any possible matches in our comprehensive lookup table. 
+
+Because some drugs belong to multiple classes and categories they can have several hundred possible synonyms! For example, there are over 500 synonyms for just heroin alone! For this reason, we have developed a helper function, compressLookup(). this function takes in a lookup table, returned by the function lookup and, by default, reduces it to just it's associated class and categories. 
+
+Finally, what if you wanted just a vector of synonyms? we have a function for that! lookup_syn, takes in a category and returns all the possible synonyms in that category. If you accidentally type in a synonym 
+the function will return a message suggesting that you try a different query instead!
+
+one additional note, the lookup and compresslookup functions contain three additional agruments, search/compressClass, search/compressCategory and search/compressSynonym. These arguments are there to make your search results easier to work with by setting the specific column to either TRUE or FALSE. More on that can be found in the DOPE vignette.
 ---
 class: inverse center middle
 
-DEMO 🌿
+&lt;p style="color:#FFFFFF; font-size:4rem"&gt;DEMO 🌿 &lt;/p&gt;
 
 ---
 # Vision 👁
@@ -172,10 +293,29 @@ row.white[
 
 
 ---
+# Resources &amp; Acknowledgments
+
+- [DEA factsheet web pages](https://www.dea.gov/factsheets)
+
+- [DEA 2017 Drug Slang Code Words PDF](https://bit.ly/2TDDUJ2)
+
+- [DEA 2020 Drugs of Abuse/Resource Guide](https://bit.ly/3q2F10Z)
+
+- [DEA Controlled Substances list in the Drug Schedule Orange Book](https://bit.ly/3iN5iPi)
+
+- [No Slang](https://www.noslang.com/drugs/dictionary)
+
+
+*We are grateful to the Clinical Trials Network for the support for the CTN-0094 project. It provided support and the timeline follow back files which motivated the development of DOPE.*
+
+
+---
 class: inverse center middle
 
 
-Thanks!
+&lt;p style="color:#FFFFFF; font-size:4rem"&gt;Thanks!&lt;/p&gt;
+
+![:scale 20%](img/rmed-hex.png)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
