@@ -3,7 +3,6 @@
   <head>
     <title>Drug Ontology Parsing Engine (DOPE)</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Layla Bouzoubaa" />
     <meta name="date" content="2021-08-26" />
     <script src="libs/header-attrs-2.7/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
@@ -17,7 +16,10 @@ class: center, middle, inverse, title-slide
 
 # <b>D</b>rug <b>O</b>ntology <b>P</b>arsing <b>E</b>ngine (DOPE)
 ## R/Medicine Conference
-### Layla Bouzoubaa
+### Layla Bouzoubaa </br>
+<p style=font-size:28px>
+<b>Gabriel Odom, PhD &amp; Raymond Balise, PhD</b>
+<p>
 ### August 26, 2021
 
 ---
@@ -28,7 +30,8 @@ class: center middle
 
  
 ![:scale 80%](img/nlm.png)
-
+???
+If you've ever had to specific details on a drug, for a example, methylfenidate aka ritalin, you've probably visited either the National Library of Medicine, a drug database like Drug Bank, or if you're drug in question is illicit, then the DEA. 
 ---
 class: center middle
 
@@ -47,8 +50,7 @@ class: inverse center middle
 
 
 ![](img/bored.png)
-???
-If you've ever had to specific details on a drug, for a example, methylfenidate aka ritalin, you've probably visited either the National Library of Medicine, a drug database like Drug Bank, or if you're drug in question is illicit, then the DEA. 
+
 
 ---
 class: split-50 center middle
@@ -134,10 +136,9 @@ parse(messy_data$textdrug)
 ```
 
 ```
-##  [1] "bup/nx"       "bup/nx"       "bup/nx"      
-##  [4] "percocets"    "vicodin"      "barbiturate" 
-##  [7] "heroin"       "ambien"       "ambien"      
-## [10] "promethazine" "clonidine"   
+##  [1] "bup/nx"       "bup/nx"       "bup/nx"       "percocets"    "vicodin"     
+##  [6] "barbiturate"  "heroin"       "ambien"       "ambien"       "promethazine"
+## [11] "clonidine"   
 ## attr(,"na.action")
 ## [1] 8 9
 ## attr(,"class")
